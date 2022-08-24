@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import styles from './Game.module.css'
 
-import Icon from '../icon/Icon'
 import GameOption from '../gameOption/GameOption'
+import GameInfo from '../gameInfo/GameInfo'
 
 const winnerTable =[
   [0,1,2],
@@ -26,32 +26,33 @@ function Game (){
         newGameState[pos] = currentPlayer
         setGameState(newGameState)
       }      
-  }       
+  }        
+  
+  const verifyGame = () =>{
+    winnerTable.forEach((line) => {
+      const values = line.map((pos) => gameState[pos])
+      const sum = values.reduce((sum,value) => sum + value)
+      if (sum === 3 || sum === -3){
+        setWinner (sum / 3) 
+      }        
+    }) 
+  }
+
+  const handleReset = () => {
+    console.log("passou")
+    setGameState(Array(9).fill(0))
+    setWinner(0)
+  }
 
   useEffect(() => { 
     setCurrentPlayer(currentPlayer * -1)
     verifyGame()
-  }, [gameState]);
+  }, [gameState]); 
+  
 
-  const verifyGame = () =>{
-      winnerTable.forEach((line) => {
-        const values = line.map((pos) => gameState[pos])
-        const sum = values.reduce((sum,value) => sum + value)
-        if (sum === 3 || sum === -3) setWinner (sum / 3)        
-      }) 
-    }
   return(
     
-    <div className={styles.gameContent}>
-      <div className={styles.gameInfo}>
-        <h4>Próximo a jogar:</h4>
-        {
-          currentPlayer === 1 && <Icon iconName="circle" />
-        }
-         {
-          currentPlayer === -1 && <Icon iconName="x" />
-        }
-      </div>
+    <div className={styles.gameContent}>     
       <div className={styles.game}>
         {
           gameState.map((value, pos) => 
@@ -63,6 +64,11 @@ function Game (){
           )
         }      
       </div>    
+      <GameInfo 
+        currentPlayer={currentPlayer}
+        winner={winner}
+        onReset={handleReset}
+      />
     </div>
       
   )
